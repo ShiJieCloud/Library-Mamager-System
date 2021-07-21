@@ -1,7 +1,3 @@
-[TOC]
-
-------
-
 
 
 # Library Manager System
