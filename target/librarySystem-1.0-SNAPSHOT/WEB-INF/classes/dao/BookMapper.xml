@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--设置 namespace 绑定BookMapper接口-->
+<mapper namespace="dao.BookMapper">
+
+    <!--配置缓存
+        eviction： 定义回收的策略，常见的有 FIFO，LRU。
+        flushInterval： 配置一定时间自动刷新缓存，单位是毫秒。
+        size： 最多缓存对象的个数。
+        readOnly： 是否只读，若配置可读写，则需要对应的实体类能够序列化。
+    -->
+    <cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true"/>
+
+    <insert id="addBook" parameterType="Books">
+        insert into books(name, counts, detail, price, imagePath)
+        values (#{name}, #{counts}, #{detail}, #{price}, #{imagePath})
+    </insert>
+
+    <delete id="deleteBookById" parameterType="int">
+        delete
+        from books
+        where id = #{id}
+    </delete>
+
+    <update id="updateBook" parameterType="Books">
+        update books
+        set name=#{name},
+            counts=#{counts},
+            detail=#{detail},
+            price=#{price},
+            imagePath=#{imagePath}
+        where id = #{id}
+    </update>
+
+    <select id="queryBookById" resultType="Books">
+        select *
+        from books
+        where id = #{id}
+    </select>
+
+    <!--queryAllBooks 方法-->
+    <select id="queryAllBooks" resultType="Books">
+        select *
+        from books
+    </select>
+
+    <!--queryBookByName 方法-->
+    <select id="queryBookByName" resultType="Books">
+        select *
+        from books
+        where name = #{name}
+    </select>
+
+    <!--queryRow 方法
+        SQL：select count(*) from books
+        如果 name !=null and name !='' 时
+        SQL：select count(*) from books where name like "%"#{name}"%"
+    -->
+    <select id="queryRow" resultType="_int">
+        select count(*) from books
+        <where>
+            <if test=" name !=null and name !=''">
+                name like "%"#{name}"%"
+            </if>
+        </where>
+    </select>
+
+    <!--limitBook 方法
+        SQL：select * from books limit #{begin}, #{size}
+        如果 name !=null and name !='' 时
+        SQL：select * from books  where name like "%"#{name}"%" limit #{begin}, #{size}
+    -->
+    <select id="limitBook" resultType="Books">
+        select *
+        from books
+        <where>
+            <if test=" name !=null and name !=''">
+                name like "%"#{name}"%"
+            </if>
+        </where>
+        limit #{begin}, #{size}
+    </select>
+
+</mapper>
